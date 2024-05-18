@@ -6,13 +6,12 @@
 import re
 import joblib
 import streamlit as st
-import string
 import contractions
 
 def preprocess_text(text):
     # Convert text to lowercase
     text = text.lower()
-    # Remove links, mentions, non-ASCII characters, punctuations
+    # Remove links, mentions, non-ASCII characters, and punctuations
     text = re.sub(r"https?\S+|www\.\S+|@[^\s]+|[^\w\s]|[\u0080-\uffff]", "", text)
     # Expand contractions
     text = contractions.fix(text)
@@ -46,9 +45,15 @@ user_input = st.text_area("Enter the tweet for sentiment analysis:")
 if st.button("Analyze Sentiment"):
     if user_input:
         prediction = predict_sentiment(user_input)
+        processed_text = preprocess_text(user_input)
+        st.write(f"Processed Text: {processed_text}")
+        
+        # Check the prediction and handle it
         if prediction == 1:
-            st.write("Positive sentiment")
+            st.write("Sentiment: Positive")
+        elif prediction == 0:
+            st.write("Sentiment: Negative")
         else:
-            st.write("Negative sentiment")
+            st.write(f"Sentiment: {prediction}")
     else:
         st.write("Please enter some text.")
