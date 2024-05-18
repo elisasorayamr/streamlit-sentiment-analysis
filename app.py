@@ -8,23 +8,19 @@ import joblib
 import streamlit as st
 import string
 import contractions
-from nltk.stem import WordNetLemmatizer
 
 def preprocess_text(text):
     # Convert text to lowercase
     text = text.lower()
     # Remove links, mentions, non-ASCII characters, punctuations
-    text = re.sub(r"(?:\@|https?\://)\S+|[^a-zA-Z\s]|[\u0080-\uffff]|["+string.punctuation+"]", "", text)
+    text = re.sub(r"https?\S+|www\.\S+|@[^\s]+|[^\w\s]|[\u0080-\uffff]", "", text)
     # Expand contractions
     text = contractions.fix(text)
-    # Lemmatize words (optional, depends on your use case)
-    lemmatizer = WordNetLemmatizer()
-    tokens = text.split()  # Custom tokenization
-    tokens = [lemmatizer.lemmatize(word) for word in tokens]
     # Remove short words (optional, depends on your use case)
-    tokens = [word for word in tokens if len(word) > 2]
-    # Join tokens back into text
-    processed_text = ' '.join(tokens)
+    words = text.split()
+    words = [word for word in words if len(word) > 2]
+    # Join words back into text
+    processed_text = ' '.join(words)
     return processed_text
 
 # Load the SVM model and TF-IDF vectorizer
