@@ -4,8 +4,34 @@
 # In[ ]:
 
 
-import streamlit as st
-import joblib
+import re
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+import string
+import contractions
+from nltk.stem import WordNetLemmatizer
+
+# Define the preprocess_text function
+def preprocess_text(text):
+    # Convert text to lowercase
+    text = text.lower()
+    # Remove links, mentions, non-ASCII characters, punctuations
+    text = re.sub(r"(?:\@|https?\://)\S+|[^a-zA-Z\s]|[\u0080-\uffff]|["+string.punctuation+"]", "", text)
+    # Expand contractions
+    text = contractions.fix(text)
+    # Tokenize the text
+    tokens = word_tokenize(text)
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    tokens = [token for token in tokens if token not in stop_words]
+    # Lemmatize words
+    lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
+    # Remove short words
+    tokens = [word for word in tokens if len(word) > 2]
+    # Join tokens back into text
+    processed_text = ' '.join(tokens)
+    return processed_text
 
 # Load the SVM model and TF-IDF vectorizer
 svm_model = joblib.load('svm_model.pkl')
@@ -13,7 +39,7 @@ tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')
 
 # Define a function to preprocess and vectorize text
 def preprocess_and_vectorize(text):
-    processed_text = preprocess_text(text)  # You need to define preprocess_text() according to your preprocessing steps
+    processed_text = preprocess_text(text)
     text_vector = tfidf_vectorizer.transform([processed_text])
     return text_vector
 
@@ -36,4 +62,3 @@ if st.button("Analyze Sentiment"):
             st.write("Negative sentiment")
     else:
         st.write("Please enter some text.")
-
