@@ -3,13 +3,9 @@
 
 # In[ ]:
 
-
 import re
 import joblib
 import streamlit as st
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 import string
 import contractions
 from nltk.stem import WordNetLemmatizer
@@ -21,10 +17,9 @@ def preprocess_text(text):
     text = re.sub(r"(?:\@|https?\://)\S+|[^a-zA-Z\s]|[\u0080-\uffff]|["+string.punctuation+"]", "", text)
     # Expand contractions
     text = contractions.fix(text)
-    # Tokenize the text
-    tokens = word_tokenize(text)
     # Lemmatize words (optional, depends on your use case)
     lemmatizer = WordNetLemmatizer()
+    tokens = text.split()  # Custom tokenization
     tokens = [lemmatizer.lemmatize(word) for word in tokens]
     # Remove short words (optional, depends on your use case)
     tokens = [word for word in tokens if len(word) > 2]
