@@ -8,17 +8,12 @@ import re
 import joblib
 import streamlit as st
 import nltk
-
-# Download NLTK punkt tokenizer data
-nltk.download('punkt')
-
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
 import contractions
 from nltk.stem import WordNetLemmatizer
 
-# Define the preprocess_text function
 def preprocess_text(text):
     # Convert text to lowercase
     text = text.lower()
@@ -28,13 +23,10 @@ def preprocess_text(text):
     text = contractions.fix(text)
     # Tokenize the text
     tokens = word_tokenize(text)
-    # Remove stopwords
-    stop_words = set(stopwords.words('english'))
-    tokens = [token for token in tokens if token not in stop_words]
-    # Lemmatize words
+    # Lemmatize words (optional, depends on your use case)
     lemmatizer = WordNetLemmatizer()
     tokens = [lemmatizer.lemmatize(word) for word in tokens]
-    # Remove short words
+    # Remove short words (optional, depends on your use case)
     tokens = [word for word in tokens if len(word) > 2]
     # Join tokens back into text
     processed_text = ' '.join(tokens)
